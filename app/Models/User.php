@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -44,5 +45,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    
+    public function createClient(){
+        return $this->hasMany(Client::class, 'created_by');
+    }
+
+    public function createTask(){
+        return $this->hasMany(Task::class, 'created_by');
+    }
+
+    public function createTimelog(){
+        return $this->hasMany(Timelog::class, 'created_by');
+    }
+    
+    public function createProject(){
+        return $this->belongsToMany(Project::class, 'created_by');
     }
 }
