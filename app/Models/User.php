@@ -47,19 +47,31 @@ class User extends Authenticatable
         ];
     }
     
-    public function createClient(){
+    public function clients(){
         return $this->hasMany(Client::class, 'created_by');
     }
 
-    public function createTask(){
+    public function tasks(){
         return $this->hasMany(Task::class, 'created_by');
     }
 
-    public function createTimelog(){
+    public function timelogs(){
         return $this->hasMany(Timelog::class, 'created_by');
     }
     
-    public function createProject(){
+    public function projects(){
         return $this->belongsToMany(Project::class, 'user_projects')->withTimestamps();
+    }
+
+    public function isAdmin(){
+        return $this->role === 'admin';
+    }
+
+    public function isManager(){
+        return $this->role === 'manager';
+    }
+
+    public function isMember(){
+        return $this->role === 'member';
     }
 }
