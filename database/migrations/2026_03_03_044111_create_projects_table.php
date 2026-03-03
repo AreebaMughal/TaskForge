@@ -22,6 +22,8 @@ return new class extends Migration
             $table->softDeletesTz();
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->index('status');
+            $table->index('created_by');
         });
     }
 

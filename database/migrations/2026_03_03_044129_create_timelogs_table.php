@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestampsTz();
             $table->softDeletesTz();
+            $table->index('created_by');
         });
     }
 

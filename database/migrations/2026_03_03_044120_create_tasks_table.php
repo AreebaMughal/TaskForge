@@ -15,12 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->enum('status',['in_progress, completed']);
+            $table->enum('status',['in_progress', 'completed']);
             $table->date('due_date');
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestampsTz();
             $table->softDeletesTz();
+            $table->index('status');
         });
     }
 
