@@ -12,11 +12,11 @@ class Project extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function task(){
+    public function tasks(){
         return $this->hasMany(Task::class);
     }
 
-    public function user(){
-        return $this->belongsTo(User::class, 'created_by');
+    public function members(){
+        return $this->belongsToMany(User::class, 'user_projects')->withTimestamps();
     }
 }
