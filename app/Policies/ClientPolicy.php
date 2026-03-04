@@ -29,7 +29,7 @@ class ClientPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isManager();
+        return $user->isManager() || $user->isAdmin();
     }
 
     /**
@@ -37,7 +37,7 @@ class ClientPolicy
      */
     public function update(User $user, Client $client): bool
     {
-        return $user->isManager();
+        return $user->isManager() || $user->isAdmin();
     }
 
     /**
@@ -45,7 +45,7 @@ class ClientPolicy
      */
     public function delete(User $user, Client $client): bool
     {
-        return  $user->isManager();
+        return  $user->isManager() || $user->isAdmin();
     }
 
     /**
