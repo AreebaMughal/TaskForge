@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\DeleteClientAction;
+use App\Exceptions\CannotDeleteClientException;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Models\Client;
@@ -81,7 +82,7 @@ class ClientController extends Controller
         $this->authorize('delete', $client);
         try{
             $action->execute($client);
-        } catch (\Exception $e){
+        } catch (CannotDeleteClientException $e){
             return back()->with('error', $e->getMessage());
         }
         return redirect()->route('clients.index')->with('success', 'client deleted');
