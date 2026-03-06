@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class projectRequest extends FormRequest
+class UpdateProjectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->call('update', $this->route('project'));
     }
 
     /**
@@ -22,7 +22,11 @@ class projectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'status' => ['required', 'in:active,inactive'],
+            'start_date' => ['required', 'date'],
+            'due_date' => ['required', 'date', 'after:start_date'],
+            'client_id' => ['required', 'exists:clients,id'],
         ];
     }
 }

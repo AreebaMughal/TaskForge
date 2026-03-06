@@ -2,17 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\ArchiveProjectAction;
+use App\Actions\AssignMembersAction;
+use App\Http\Requests\StoreProjectRequest;
+use App\Models\Client;
 use App\Models\Project;
+use Exception;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $this->authorize('viewAny', Project::class);
+        $projects = Project::with('client')->withCount('tasks')->when(request('status'),fn($q, $status) => $q->where('status', $status))->latest()->paginate(10);
+        return view('projects.index', compact('projects'));
     }
 
     /**
@@ -20,15 +29,21 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', Project::class);
+        $clients=Client::where('created_by', auth()->id())->get();
+        return view('projects.create', compact('clients'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProjectRequest $request)
     {
-        //
+        Project::create([
+            ...$request->validated(),
+            'created_by'=> auth()->id()
+        ]);
+        return redirect()->route('projects.index')->with('success', 'project created successfully');
     }
 
     /**
@@ -36,7 +51,9 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        //
+        $this->authorize('show', $project);
+        $project->load(['client', 'task', 'members']);
+        return view('projects.show', compact('project'));
     }
 
     /**
@@ -44,7 +61,9 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        //
+        $this->authorize('update', $project);
+        $client = Client::where('created_by', auth()->id())->get();
+        return view('projects.edit', compact('project', 'clients'));
     }
 
     /**
@@ -52,7 +71,8 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-        //
+        $project->update([$request->validated()]);
+        return redirect()->route('projects.index')->with('success', 'project successfully updated');
     }
 
     /**
@@ -60,6 +80,24 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        $this->authorize('delete', $project);
+        $project->delete();
+        return redirect()->route('projects.index')->with('success', 'project deleted successfully');
+    }
+
+    public function archive(Project $project, ArchiveProjectAction $action){
+        $this->authorize('update', $project);
+        try{
+            $action->execute($project);
+        }catch(Exception $e){
+            return back()->with('error', $e->getMessage());
+        }
+        return redirect()->route('projects.index')->with('success', 'project archived successfully');
+    }
+
+    public function assignMembers(Project $project, AssignMembersAction $action){
+        $this->authorize('update', $project);
+        $action->execute($project, request('members', []));
+        return back()->with('success', 'member assigned. congratulations!');
     }
 }

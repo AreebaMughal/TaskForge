@@ -13,7 +13,7 @@ class ProjectPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isManager() || $user->isMember();
     }
 
     /**
@@ -37,7 +37,7 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        return $user->isManager() && $project->created_by === $user->id;
+        return $user->isManager() && $project->created_by === $user->id && !$project->archived_at;
     }
 
     /**
