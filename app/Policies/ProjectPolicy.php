@@ -29,7 +29,7 @@ class ProjectPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isManager();
+        return $user->isManager()|| $user->isAdmin();
     }
 
     /**
@@ -37,7 +37,7 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        return $user->isManager() && $project->created_by === $user->id && !$project->archived_at;
+        return $user->isManager() && $project->created_by === $user->id && !$project->archived_at || $user->isAdmin();
     }
 
     /**
@@ -45,7 +45,7 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
-        return $user->isManager() && $project->created_by === $user->id;
+        return $user->isManager() && $project->created_by === $user->id || $user->isAdmin();
     }
 
     /**
