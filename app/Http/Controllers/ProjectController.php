@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\ArchiveProjectAction;
 use App\Actions\AssignMembersAction;
 use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Client;
 use App\Models\Project;
 use Exception;
@@ -30,7 +31,7 @@ class ProjectController extends Controller
     public function create()
     {
         $this->authorize('create', Project::class);
-        $clients=Client::where('created_by', auth()->id())->get();
+        $clients=Client::all();
         return view('projects.create', compact('clients'));
     }
 
@@ -51,8 +52,8 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        $this->authorize('show', $project);
-        $project->load(['client', 'task', 'members']);
+        $this->authorize('viewAny', $project);
+        $project->load(['client', 'tasks', 'members']);
         return view('projects.show', compact('project'));
     }
 
@@ -62,16 +63,16 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $this->authorize('update', $project);
-        $client = Client::where('created_by', auth()->id())->get();
+        $clients = Client::all();
         return view('projects.edit', compact('project', 'clients'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project)
     {
-        $project->update([$request->validated()]);
+        $project->update($request->validated());
         return redirect()->route('projects.index')->with('success', 'project successfully updated');
     }
 
