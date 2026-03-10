@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\ArchiveProjectAction;
 use App\Actions\AssignMembersAction;
 use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Client;
 use App\Models\Project;
 use Exception;
@@ -69,7 +70,7 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project)
     {
         $project->update([$request->validated()]);
         return redirect()->route('projects.index')->with('success', 'project successfully updated');
@@ -89,7 +90,7 @@ class ProjectController extends Controller
         $this->authorize('update', $project);
         try{
             $action->execute($project);
-        }catch(Exception $e){
+        }catch(\Exception $e){
             return back()->with('error', $e->getMessage());
         }
         return redirect()->route('projects.index')->with('success', 'project archived successfully');
