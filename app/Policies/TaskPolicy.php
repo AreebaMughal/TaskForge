@@ -13,7 +13,7 @@ class TaskPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isManager() || $user->isMember();;
     }
 
     /**

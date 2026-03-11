@@ -90,7 +90,7 @@ class ProjectController extends Controller
         $this->authorize('update', $project);
         try{
             $action->execute($project);
-        }catch(Exception $e){
+        }catch(\Exception $e){
             return back()->with('error', $e->getMessage());
         }
         return redirect()->route('projects.index')->with('success', 'project archived successfully');
