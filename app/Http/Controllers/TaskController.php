@@ -39,6 +39,7 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request, CreateTaskAction $action)
     {
+        dd($request->validated(), auth()->id());
         try{
             $action->execute($request->validated(), auth()->id());
         }catch(\Exception $e){
