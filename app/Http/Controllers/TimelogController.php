@@ -41,7 +41,7 @@ class TimelogController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('tasks.show', $request->task_id)->with('success', 'Time logged successfully.');
+        return redirect()->route('tasks.show', $request->task_id)->with('success', 'Timelog successfully.');
     }
 
     /**

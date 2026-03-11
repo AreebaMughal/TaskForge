@@ -29,7 +29,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isMember();
+        return $user->isMember()|| $user->isAdmin();
     }
 
     /**
