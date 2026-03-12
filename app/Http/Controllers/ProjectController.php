@@ -89,7 +89,7 @@ class ProjectController extends Controller
     public function archive(Project $project, ArchiveProjectAction $action){
         $this->authorize('update', $project);
         try{
-            $action->execute($project);
+            $action->execute($project, auth()->id());
         }catch(\Exception $e){
             return back()->with('error', $e->getMessage());
         }
