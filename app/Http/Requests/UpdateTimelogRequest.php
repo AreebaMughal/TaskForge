@@ -12,7 +12,7 @@ class UpdateTimelogRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('update', Timelog::class);
+        return $this->user()->can('update', $this->route('timelog'));
     }
 
     /**

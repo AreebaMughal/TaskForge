@@ -7,6 +7,7 @@
                 </a>
             </div>
             @can('update', $task)
+            @unless($task->project->archived_at)
             <div class="flex items-center gap-2">
                 <a href="{{ route('tasks.edit', $task) }}"
                     class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
@@ -22,6 +23,7 @@
                     </button>
                 </form>
             </div>
+            @endunless
             @endcan
         </div>
     </x-slot>
@@ -74,10 +76,12 @@
                         Time Logs ({{ $task->timelogs->count() }})
                     </h3>
                     @can('create', App\Models\Timelog::class)
+                    @unless($task->project->archived_at)
                     <a href="{{ route('timelogs.create', ['task' => $task->id]) }}"
                         class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition">
                         + Log Time
                     </a>
+                    @endunless
                     @endcan
                 </div>
                 @forelse($task->timelogs as $timelog)
@@ -94,6 +98,7 @@
                             </p>
                         </div>
                         @can('update', $timelog)
+                        @unless($task->project->archived_at)
                         <div class="flex items-center gap-3 ml-4">
                             <a href="{{ route('timelogs.edit', $timelog) }}"
                                 class="text-xs text-gray-500 hover:text-indigo-600 transition">Edit</a>
@@ -107,6 +112,7 @@
                                 </button>
                             </form>
                         </div>
+                        @endunless
                         @endcan
                     </div>
                 </div>

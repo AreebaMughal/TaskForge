@@ -16,7 +16,7 @@ class DashboardController extends Controller
         }
 
         if ($user->isManager()) {
-            return redirect()->route('clients.index');
+            return redirect()->route('projects.index');
         }
 
         return redirect()->route('projects.index');

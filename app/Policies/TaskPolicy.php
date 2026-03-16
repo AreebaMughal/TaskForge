@@ -29,7 +29,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isMember()|| $user->isAdmin();
+        return $user->isMember();
     }
 
     /**
@@ -37,6 +37,10 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
+        if ($task->project->archived_at) {
+            return false;
+        }
+
         return $user->isMember() && $task->created_by === $user->id;
     }
 
@@ -45,6 +49,10 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
+        if ($task->project->archived_at) {
+            return false;
+        }
+
         return $user->isMember() && $task->created_by === $user->id;
     }
 

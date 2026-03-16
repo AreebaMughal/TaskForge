@@ -30,7 +30,9 @@ class TaskController extends Controller
     {
         $this->authorize('create', Task::class);
         $projectId = request('project');
-        $projects = Project::whereNull('archived_at')->get();
+        $projects = Project::whereNull('archived_at')
+            ->whereHas('members', fn($q) => $q->where('users.id', auth()->id()))
+            ->get();
         return view('tasks.create', compact('projectId', 'projects'));
     }
 

@@ -57,7 +57,7 @@ class TimelogController extends Controller
      */
     public function edit(Timelog $timelog)
     {
-        $this->authorize('update', Timelog::class);
+        $this->authorize('update', $timelog);
         return view('timelogs.edit', compact('timelog'));
     }
 
@@ -66,6 +66,7 @@ class TimelogController extends Controller
      */
     public function update(UpdateTimelogRequest $request, Timelog $timelog)
     {
+        $this->authorize('update', $timelog);
         $timelog->update($request->validated());
         return redirect()->route('tasks.show', $timelog->task_id)->with('success', 'successfully updated');
     }
