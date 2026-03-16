@@ -16,6 +16,25 @@
                 <form action="{{ route('tasks.store') }}" method="POST" class="space-y-5">
                     @csrf
                     <div>
+                        <label for="project_id" class="block text-sm font-medium text-gray-700 mb-1">
+                            Project <span class="text-red-500">*</span>
+                        </label>
+                        <select id="project_id" name="project_id"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
+                                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+                                       @error('project_id') border-red-400 @enderror">
+                            <option value="">Select a project</option>
+                            @foreach($projects as $project)
+                                <option value="{{ $project->id }}" {{ (old('project_id') ?? $projectId) == $project->id ? 'selected' : '' }}>
+                                    {{ $project->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('project_id')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
                         <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
                             Title <span class="text-red-500">*</span>
                         </label>

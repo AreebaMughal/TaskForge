@@ -21,7 +21,11 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        return $user->isManager() || $user->isAdmin() || $user->isMember();
+        if ($user->isAdmin() || $user->isManager()) {
+            return true;
+        }
+
+        return $user->isMember() && $project->members->contains($user->id);
     }
 
     /**
@@ -37,7 +41,11 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        return $user->isManager() && $project->created_by === $user->id && !$project->archived_at || $user->isAdmin();
+        if ($project->archived_at) {
+            return false;
+        }
+
+        return $user->isManager() && $project->created_by === $user->id || $user->isAdmin();
     }
 
     /**
@@ -45,6 +53,10 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
+        if ($project->archived_at) {
+            return false;
+        }
+
         return $user->isManager() && $project->created_by === $user->id || $user->isAdmin();
     }
 

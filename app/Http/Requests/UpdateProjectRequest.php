@@ -27,6 +27,8 @@ class UpdateProjectRequest extends FormRequest
             'start_date' => ['required', 'date'],
             'due_date' => ['required', 'date', 'after:start_date'],
             'client_id' => ['required', 'exists:clients,id'],
+            'members' => ['nullable', 'array'],
+            'members.*' => ['exists:users,id'],
         ];
     }
 }

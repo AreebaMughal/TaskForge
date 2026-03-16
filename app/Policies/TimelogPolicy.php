@@ -37,6 +37,10 @@ class TimelogPolicy
      */
     public function update(User $user, Timelog $timelog): bool
     {
+        if ($timelog->task->project->archived_at) {
+            return false;
+        }
+
         return $user->isMember() && $timelog->created_by === $user->id;
     }
 
@@ -45,6 +49,10 @@ class TimelogPolicy
      */
     public function delete(User $user, Timelog $timelog): bool
     {
+        if ($timelog->task->project->archived_at) {
+            return false;
+        }
+
         return $user->isMember() && $timelog->created_by === $user->id;
     }
 

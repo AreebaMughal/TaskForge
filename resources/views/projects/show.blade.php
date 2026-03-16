@@ -82,32 +82,6 @@
                     </div>
                 </dl>
             </div>
-            @can('update', $project)
-            @unless($project->archived_at)
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-sm font-semibold text-gray-700">Assign Members</h3>
-                    <form action="{{route('projects.members', $project)}}" method="post">
-                        @csrf
-                        <div class="space-y-2 mb-4">
-                            @foreach($project->members as $member)
-                            <label class="flex items-center gap-2 text-sm text-gray-700">
-                                <input type="checkbox" name="members[]"
-                                    value="{{ $member->id }}" checked
-                                    class="rounded border-gray-300 text-indigo-600">
-                                {{ $member->name }}
-                            </label>
-                            @endforeach
-                        </div>
-                        <button type="submit"
-                            class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-                            Update Members
-                        </button>
-
-                    </form>
-                </div>
-                @endunless
-                @endcan
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <h3 class="text-sm font-semibold text-gray-700">Tasks ({{ $project->tasks->count() }})</h3>

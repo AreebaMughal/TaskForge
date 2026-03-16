@@ -21,7 +21,13 @@ class ProjectController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Project::class);
-        $projects = Project::with('client')->withCount('tasks')->withSum('timelogs as total_minutes', 'minutes')->when(request('status'), fn($q, $status) => $q->where('status', $status))->latest()->paginate(10);
+        $projects = Project::with('client')
+            ->withCount('tasks')
+            ->withSum('timelogs as total_minutes', 'minutes')
+            ->when(auth()->user()->isMember(), fn($q) => $q->whereHas('members', fn($query) => $query->where('users.id', auth()->id())))
+            ->when(request('status'), fn($q, $status) => $q->where('status', $status))
+            ->latest()
+            ->paginate(10);
         return view('projects.index', compact('projects'));
     }
 
@@ -64,7 +70,8 @@ class ProjectController extends Controller
     {
         $this->authorize('update', $project);
         $clients = Client::all();
-        return view('projects.edit', compact('project', 'clients'));
+        $users = \App\Models\User::where('role', \App\Models\User::ROLE_MEMBER)->get();
+        return view('projects.edit', compact('project', 'clients', 'users'));
     }
 
     /**
@@ -73,6 +80,7 @@ class ProjectController extends Controller
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $project->update($request->validated());
+        $project->members()->sync($request->members ?? []);
         return redirect()->route('projects.index')->with('success', 'project successfully updated');
     }
 
