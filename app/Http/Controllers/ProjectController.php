@@ -21,7 +21,7 @@ class ProjectController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Project::class);
-        $projects = Project::with('client')->withCount('tasks')->when(request('status'),fn($q, $status) => $q->where('status', $status))->latest()->paginate(10);
+        $projects = Project::with('client')->withCount('tasks')->withSum('timelogs as total_minutes', 'minutes')->when(request('status'), fn($q, $status) => $q->where('status', $status))->latest()->paginate(10);
         return view('projects.index', compact('projects'));
     }
 
@@ -52,7 +52,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        $this->authorize('viewAny', $project);
+        $this->authorize('view', $project);
         $project->load(['client', 'tasks', 'members']);
         return view('projects.show', compact('project'));
     }

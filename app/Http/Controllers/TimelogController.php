@@ -26,7 +26,7 @@ class TimelogController extends Controller
     public function create()
     {
         $this->authorize('create', Timelog::class);
-        $timelog = request('task');
+        $taskId = request('task');
         return view('timelogs.create', compact('taskId'));
     }
 

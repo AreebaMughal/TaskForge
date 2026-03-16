@@ -68,23 +68,7 @@
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
-                    <div>
-                        <label for="project_id" class="block text-sm font-medium text-gray-700 mb-1">
-                            Project <span class="text-red-500">*</span>
-                        </label>
-                        <select id="project_id" name="project_id"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
-                                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-                                      @error('project_id') border-red-400 @enderror">
-                                      <option value="">Select a project</option>
-                                      @foreach($projects as $project)
-                                      <option value="{{$project->id}}" {{old('project_id', $project->projectId) == $project->id ? 'selected' : ''}}>{{$project->name}}</option>
-                                      @endforeach
-                        </select>
-                        @error('project_id')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    
                     <div class="flex items-center gap-3 pt-2">
                         <button type="submit"
                                 class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-5 py-2 rounded-lg transition">

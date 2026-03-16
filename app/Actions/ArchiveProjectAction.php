@@ -15,8 +15,8 @@ class ArchiveProjectAction
      */
     public function execute(Project $project, int $userId):void
     {
-        $hasActiveProject = $project->tasks()->where('status','in_progress')->exists();
-        if($hasActiveProject){
+        $hasActiveTasks = $project->tasks()->where('status', '!=', 'completed')->exists();
+        if($hasActiveTasks){
             throw new CannotArchiveProjectException();
         }
         $project->update(['archived_at'=> now()]);

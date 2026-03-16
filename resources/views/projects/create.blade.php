@@ -4,7 +4,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-3">
-            <a href="{{route('projects.index')}}" class="text-gray-400 hover:text-gray-600 transition text-right">Back</a>
+            <a href="javascript:history.back()" class="text-gray-400 hover:text-gray-600 transition text-right">Back</a>
             <h2 class="text-xl font-semibold text-gray-400"> New Project</h2>
         </div>
     </x-slot>
@@ -33,7 +33,7 @@
                         <select name="client_id" id="client_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('client_id') border-red-400 @enderror">
                             <option value="">Select a client</option>
                             @foreach($clients as $client)
-                            <option value="{{ $client->id }} {{ old('client_id') == $client->id ? 'selected' : '' }}">
+                            <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
                                 {{ $client->name }}
                             </option>
                             @endforeach
@@ -50,8 +50,8 @@
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
                                        focus:outline-none focus:ring-2 focus:ring-indigo-500
                                        @error('status') border-red-400 @enderror">
-                            <option value="active {{ old('status') === 'active' ? 'selected' : '' }}">Active</option>
-                            <option value="inactive {{ old('status') === 'inactive' ? 'selected' : '' }}">Inactive</option>
+                            <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                         @error('status')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>

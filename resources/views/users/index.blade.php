@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold text-gray-800">Users</h2>
             @can('create', App\Models\User::class)
-            <a href="{{ route('clients.create') }}"
+            <a href="{{ route('users.create') }}"
                 class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
                 Add New User
             </a>
@@ -47,11 +47,11 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600">
                                 @if($user->role === 'admin')
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Archived</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Admin</span>
                                 @elseif($user->role === 'manager')
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Inactive</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Manager</span>
                                 @else
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Inactive</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Member</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500">

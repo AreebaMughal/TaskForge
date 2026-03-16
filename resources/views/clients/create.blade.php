@@ -4,7 +4,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-3">
-            <a href="{{ route('clients.index') }}" class="text-gray-400 hover:text-gray-600 transition">
+            <a href="javascript:history.back()" class="text-gray-400 hover:text-gray-600 transition">
                 Back
             </a>
             <h2 class="text-xl font-semibold text-gray-800">New Client</h2>

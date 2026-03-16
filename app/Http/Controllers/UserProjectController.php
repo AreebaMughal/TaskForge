@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\user_project;
+use App\Models\UserProject;
 use Illuminate\Http\Request;
 
 class UserProjectController extends Controller
@@ -34,7 +34,7 @@ class UserProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(user_project $user_project)
+    public function show(UserProject $user_project)
     {
         //
     }
@@ -42,7 +42,7 @@ class UserProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(user_project $user_project)
+    public function edit(UserProject $user_project)
     {
         //
     }
@@ -50,7 +50,7 @@ class UserProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, user_project $user_project)
+    public function update(Request $request, UserProject $user_project)
     {
         //
     }
@@ -58,7 +58,7 @@ class UserProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(user_project $user_project)
+    public function destroy(UserProject $user_project)
     {
         //
     }
