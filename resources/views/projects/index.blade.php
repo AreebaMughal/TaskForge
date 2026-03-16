@@ -5,7 +5,7 @@
     <x-slot name="header">
         <div class="flex item-center justify-between">
             <h2 class="text-xl font-semibold text-gray-800">Projects</h2>
-            @can('create', App\Models\Client::class)
+            @can('create', App\Models\Project::class)
             <a href="{{ route('projects.create')}}" class=" bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
                 Add new Project
             </a>
