@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TimelogController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects/{project}/members', [ProjectController::class, 'assignMembers'])->name('projects.members');
     Route::resource('/tasks', TaskController::class)->except(['index']);
     Route::resource('/timelogs', TimelogController::class)->except(['index', 'show']);
+    Route::resource('users', UserController::class)->except(['show']);
 });
 
 require __DIR__.'/auth.php';

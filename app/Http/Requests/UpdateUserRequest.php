@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUserRequest extends FormRequest
@@ -11,7 +12,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return  $this->user()->can('update', User::class);
     }
 
     /**
@@ -22,7 +23,9 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:25'],
+            'email' => ['required', 'email', 'unique:users,email,'. $this->route('user')->id],
+            'role' => ['required','in:admin,manager,member'],
         ];
     }
 }
