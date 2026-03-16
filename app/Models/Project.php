@@ -23,4 +23,13 @@ class Project extends Model
     public function members(){
         return $this->belongsToMany(User::class, 'user_projects')->withTimestamps();
     }
+
+    public function timelogs()
+    {
+        return $this->hasManyThrough(Timelog::class, Task::class);
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

@@ -4,7 +4,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-3">
-            <a href="{{ route('users.index') }}" class="text-gray-400 hover:text-gray-600 transition">
+            <a href="javascript:history.back()" class="text-gray-400 hover:text-gray-600 transition">
                 Back
             </a>
             <h2 class="text-xl font-semibold text-gray-800">Update User</h2>
@@ -13,7 +13,7 @@
     <div class="py-8">
         <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <form action="{{ route('users.update') }}" method="POST" class="space-y-5">
+                <form action="{{ route('users.update', $user) }}" method="POST" class="space-y-5">
                     @csrf
                     @method('PUT')
                     <div>

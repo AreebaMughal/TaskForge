@@ -5,7 +5,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div class=" flex-column ">
-                <a href="{{ route('projects.index') }}" class="text-gray-400 hover:text-gray-600 transition">
+                <a href="javascript:history.back()" class="text-gray-400 hover:text-gray-600 transition">
                     Back
                 </a>
 
@@ -54,7 +54,7 @@
                     </div>
                     <div>
                         <dt class="text-xs text-gray-500 mb-1">Client</dt>
-                        <dd class="text-sm font-medium text-gray-900">{{ $project->client->name }}</dd>
+                        <dd class="text-sm font-medium text-gray-900">{{ $project->client?->name ?? 'N/A' }}</dd>
                     </div>
                     <div>
                         <dt class="text-xs text-gray-500 mb-1">Status</dt>

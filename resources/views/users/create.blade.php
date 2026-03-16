@@ -4,7 +4,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-3">
-            <a href="{{ route('users.index') }}" class="text-gray-400 hover:text-gray-600 transition">
+            <a href="javascript:history.back()" class="text-gray-400 hover:text-gray-600 transition">
                 Back
             </a>
             <h2 class="text-xl font-semibold text-gray-800">New User</h2>
@@ -13,7 +13,7 @@
     <div class="py-8">
         <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <form action="{{ route('users.store') }}" method="POST" class="space-y-5">
+                <form action="{{ route('users.store') }}" method="POST" class="space-y-5" autocomplete="off">
                     @csrf
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
@@ -21,6 +21,7 @@
                         </label>
                         <input type="text" id="name" name="name"
                             value="{{ old('name') }}"
+                            autocomplete="off"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
                                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
                                       @error('name') border-red-400 @enderror">
@@ -34,6 +35,7 @@
                         </label>
                         <input type="email" id="email" name="email"
                             value="{{ old('email') }}"
+                            autocomplete="off"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
                                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
                                       @error('email') border-red-400 @enderror">
@@ -46,6 +48,7 @@
                             Password <span class="text-red-500">*</span>
                         </label>
                         <input type="password" id="password" name="password"
+                            autocomplete="new-password"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
                                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
                                       @error('password') border-red-400 @enderror">
@@ -58,6 +61,7 @@
                             Confirm Password <span class="text-red-500">*</span>
                         </label>
                         <input type="password" id="password_confirmation" name="password_confirmation"
+                            autocomplete="new-password"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
                                       focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>

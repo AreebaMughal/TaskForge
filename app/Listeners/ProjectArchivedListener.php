@@ -26,7 +26,7 @@ class ProjectArchivedListener
             'project_id' => $event->project->id,
             'user_id' => $event->archivedById,
             'action' => 'archived',
-            'note' => 'Project"'. $event->project->name . '"has archived.'
+            'note' => 'Project "' . $event->project->name . '" has archived.'
         ]);
     }
 }

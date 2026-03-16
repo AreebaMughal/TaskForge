@@ -3,123 +3,84 @@
 </div>
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div class=" flex items-center gap-3 ">
-                <a href="{{ route('projects.show', $task->project) }}" class="text-gray-400 hover:text-gray-600 transition">
-                    Back
-                </a>
-            </div>
-            @can('update', $project)
-            <div class="flex items-center gap-2">
-                <a href="{{ route('tasks.edit', $task) }}"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-                    Edit
-                </a>
-                <form action="{{ route('tasks.destory', $task) }}" method="POST"
-                    onsubmit="return confirm('Delete this task?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-                        Delete
-                    </button>
-                </form>
-            </div>
-            @endcan
+        <div class="flex items-center gap-3">
+            <a href="{{ route('tasks.show', $task) }}" class="text-gray-400 hover:text-gray-600 transition">
+                Back
+            </a>
+            <h2 class="text-xl font-semibold text-gray-800">Edit Task</h2>
         </div>
     </x-slot>
     <div class="py-8">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            @if(session('success'))
-            <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg text-sm">
-                {{ session('success') }}
-            </div>
-            @endif
-            @if(session('error'))
-            <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
-                {{ session('error') }}
-            </div>
-            @endif
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Task Details</h3>
-                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <form action="{{ route('tasks.update', $task) }}" method="POST" class="space-y-5">
+                    @csrf
+                    @method('PUT')
                     <div>
-                        <dt class="text-xs text-gray-500 mb-1">Project</dt>
-                        <dd class="text-sm font-medium text-gray-900"><a href="{{ route('projects.show', $task->project) }}" class="text-indigo-600 hover:underline">{{ $task->project->name }}</a></dd>
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+                            Title <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="title" name="title"
+                               value="{{ old('title', $task->title) }}"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
+                                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+                                      @error('title') border-red-400 @enderror">
+                        @error('title')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
-                        <dt class="text-xs text-gray-500 mb-1">Description</dt>
-                        <dd class="text-sm font-medium text-gray-900">{{ $task->description }}</dd>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                            Description <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="description" name="description" rows="3"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
+                                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+                                      @error('description') border-red-400 @enderror">{{old('description', $task->description)}}</textarea>
+                        @error('description')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
-                        <dt class="text-xs text-gray-500 mb-1">Status</dt>
-                        <dd>
-                            @if($task->status === 'completed')
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Archived</span>
-                            @else
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Inactive</span>
-                            @endif
-                        </dd>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">
+                            Status <span class="text-red-500">*</span>
+                        </label>
+                        <select id="status" name="status"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
+                                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+                                      @error('status') border-red-400 @enderror">
+                                      <option value="in_progress" {{old('status', $task->status) === 'in_progress' ? 'selected': ''}}>In Progress</option>
+                                      <option value="completed" {{old('status', $task->status) === 'completed' ? 'selected': ''}}>Completed</option>
+                        </select>
+                        @error('status')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
-                        <dt class="text-xs text-gray-500 mb-1">Due Date</dt>
-                        <dd class="text-sm text-gray-700">{{ $task->due_date->format('M d, Y') }}</dd>
+                        <label for="due_date" class="block text-sm font-medium text-gray-700 mb-1">
+                            Due Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" id="due_date" name="due_date"
+                               value="{{ old('due_date', $task->due_date->format('Y-m-d')) }}"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm
+                                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+                                      @error('due_date') border-red-400 @enderror">
+                        @error('due_date')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <div>
-                        <dt class="text-xs text-gray-500 mb-1">Total Logged</dt>
-                        <dd class="text-sm text-gray-700">{{ $task->timelogs->sum('minutes') }} mins</dd>
+                    <div class="flex items-center gap-3 pt-2">
+                        <button type="submit"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-5 py-2 rounded-lg transition">
+                            Save Changes
+                        </button>
+                        <a href="{{ route('tasks.show', $task) }}"
+                           class="text-sm text-gray-500 hover:text-gray-700 transition">
+                            Cancel
+                        </a>
                     </div>
-                </dl>
+                </form>
             </div>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-gray-700">
-                        Time Logs ({{ $task->timelogs->count() }})
-                    </h3>
-                    @can('create', App\Models\Timelog::class)
-                    <a href="{{ route('timelogs.create', ['task' => $task->id]) }}"
-                        class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition">
-                        + Log Time
-                    </a>
-                    @endcan
-                </div>
-                @forelse($task->timelogs as $timelog)
-                <div class="px-6 py-4 border-b border-gray-50 last:border-0">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">
-                                {{ $timelog->minutes }} mins
-                                <span class="text-gray-400 font-normal">by {{ $timelog->user->name }}</span>
-                            </p>
-                            <p class="text-xs text-gray-500 mt-0.5">{{ $timelog->note }}</p>
-                            <p class="text-xs text-gray-400 mt-0.5">
-                                {{ $timelog->created_at->format('M d, Y h:i A') }}
-                            </p>
-                        </div>
-                        @can('update', $timelog)
-                        <div class="flex items-center gap-3 ml-4">
-                            <a href="{{ route('timelogs.edit', $timelog) }}"
-                                class="text-xs text-gray-500 hover:text-indigo-600 transition">Edit</a>
-                            <form action="{{ route('timelogs.destroy', $timelog) }}" method="POST"
-                                onsubmit="return confirm('Delete this time log?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="text-xs text-gray-500 hover:text-red-600 transition">
-                                    Delete
-                                </button>
-                            </form>
-                        </div>
-                        @endcan
-                    </div>
-                </div>
-                @empty
-                <div class="px-6 py-10 text-center text-sm text-gray-400">
-                    No time logged yet.
-                </div>
-                @endforelse
-            </div>
-
         </div>
     </div>
 </x-app-layout>

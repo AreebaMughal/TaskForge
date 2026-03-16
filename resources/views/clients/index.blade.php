@@ -4,7 +4,26 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold text-gray-800">Clients</h2>
+            <x-dropdown align="left" width="48">
+                <x-slot name="trigger">
+                    <button class="inline-flex items-center gap-1 text-xl font-semibold text-gray-100 transition focus:outline-none">
+                        <div class="ms-1">
+                            <svg class="fill-current h-7 w-7 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </button>
+                </x-slot>
+
+                <x-slot name="content">
+                    <x-dropdown-link :href="route('projects.index')">
+                        Projects
+                    </x-dropdown-link>
+                    <x-dropdown-link :href="route('clients.index')">
+                        Clients
+                    </x-dropdown-link>
+                </x-slot>
+            </x-dropdown>
             @can('create', App\Models\Client::class)
             <a href="{{ route('clients.create') }}"
                 class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">

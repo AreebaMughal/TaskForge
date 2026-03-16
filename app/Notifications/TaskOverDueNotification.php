@@ -36,9 +36,10 @@ class TaskOverDueNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+            ->subject('Task Overdue: ' . $this->task->title)
+            ->line('The task "' . $this->task->title . '" in project "' . $this->task->project->name . '" is now overdue.')
+            ->line('Due Date: ' . $this->task->due_date->format('Y-m-d'))
+            ->action('View Task', url('/tasks/' . $this->task->id));
     }
 
     /**

@@ -62,7 +62,7 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        $this->authorize('update', Task::class);
+        $this->authorize('update', $task);
         return view('tasks.edit',compact('task'));
     }
 
@@ -71,7 +71,7 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        $task->updated($request->validated());
+        $task->update($request->validated());
         return redirect()->route('tasks.show', $task)->with('success', 'project successfully updated');
     }
 
