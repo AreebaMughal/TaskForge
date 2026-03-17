@@ -1,59 +1,68 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+###### Project Overview ######
+- TaskForge
+- Internal tool for tracking client projects, tasks, and time logs.
+- Stack : laravel 12, MySQL, Blade, Breeze(auth only), Tailwind CSS, DebugMail
+## Setup Instructions
+1. Clone the repository
+2. Install dependencies
+composer install
+npm install && npm run build
+3. Environment setup
+cp .env.example .env
+php artisan key:generate
+4. Configure your database
+Open .env and update:
+DB_DATABASE=taskforge
+DB_USERNAME=root
+5. Run migrations and seeders
+php artisan migrate --seed
+6. Start the development server
+php artisan serve
+7. Run the queue worker in a separate terminal:
+php artisan queue:work
+To manually trigger the overdue task check:
+php artisan app:check-overdue-tasks
+8. Mail Setup (DebugMail)
+The project uses DebugMail to catch emails during development.
+Sign up at https://debugmail.io
+Copy your SMTP credentials into .env:
+- MAIL_MAILER=smtp
+- MAIL_HOST=debugmail.io
+- MAIL_PORT=25
+- MAIL_USERNAME=your_debugmail_username
+- MAIL_PASSWORD=your_debugmail_password
+- MAIL_FROM_ADDRESS=taskforge@example.com
+- MAIL_FROM_NAME="TaskForge"
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Where eager loading is used:
+- ClientController@show — loads projects with the client so - the show page doesn't query per project
+- ProjectController@index — Project::with('client')- ->withCount('tasks') loads all client names and task - counts in 2 extra queries instead of one per row
+- ProjectController@show — $project->load(['client', 'tasks.- timelogs', 'members']) loads everything the detail page - needs upfront
+- TaskController@show — $task->load(['project', 'timelogs.- user']) loads the task's project and each timelog's user - in one go
+- LogTimeAction — Task::with('project.members') chains two - relationships in a single query
+- CheckOverdueTasks command — Task::with('project') so the - job doesn't reload the project for each task
+- TaskSeeder — Project::with('members')->get() avoids a - members query per project during seeding
 
-## About Laravel
+## Requirement Mapping
+# FR-1 — Auth and Roles
+Roles are stored as an enum on the users table. Three helper methods on the User model isAdmin(), isManager(), isMember(). Authorization is enforced through five Policy classes: ClientPolicy, ProjectPolicy, TaskPolicy, TimelogPolicy, and UserPolicy. No scattered if-statements in controllers.
+# FR-2 — Data Model
+All models and migrations live in the standard Laravel folders. Relationships cover one-to-many , many-to-many , and deletes on all main models.
+# FR-3 — CRUD Flows
+Each resource has a dedicated controller, two Form Requests (store and update), and where needed an Action class for business logic. Client deletion is blocked by DeleteClientAction if active projects exist. Project list supports status filtering. Member assignment uses sync() through AssignMembersAction.
+# FR-4 — Business Rules
+- Archive blocked by ArchiveProjectAction if any task is not completed
+- Task due date validated against project start date inside CreateTaskAction
+- Member project membership checked in both CreateTaskAction and LogTimeAction
+- Timelog minutes capped at 600 via min:1, max:600 in StoreTimelogRequest
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# ER-A — Structure
+- All controllers are thin . Each method calls an Action  and returns a response. Business logic lives in Actions. All routes use Route::resource() where appropriate.
+# ER-B — Validation and Security
+- Every create and update operation goes through a Form Request class. All models have $fillable defined. State changing routes are behind auth middleware with @csrf in every form. Policies handle all authorization.
+# ER-C — Database
+- Migrations are fully reversible with down() methods. Foreign key constraints and indexes are defined where they make sense. Eager loading is used throughout.
+# ER-D — Events, Jobs, Notifications
+- When a project is archived, ArchiveProjectAction fires a ProjectArchived event. ProjectArchivedListener picks it up and writes a row to the audit_logs table. For overdue  tasks, a scheduled command runs daily, dispatches a NotifyOverdueTask job per overdue task, and the job sends a TaskOverdueNotification email to the project manager through the database queue driver.
+# ER-E — Tests
+- 10 custom feature tests covering authorization denial, business rule enforcement, validation errors, successful CRUD operations, and queued job dispatch.

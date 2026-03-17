@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Timelog extends Model
 {
+    use HasFactory;
     protected $fillable = ['minutes', 'note', 'task_id', 'created_by'];
 
     public function user(){
