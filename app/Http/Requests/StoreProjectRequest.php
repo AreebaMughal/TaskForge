@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Client;
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProjectRequest extends FormRequest
@@ -27,7 +29,14 @@ class StoreProjectRequest extends FormRequest
             'status' => ['required', 'in:active,inactive'],
             'due_date' => ['required', 'date','after:start_date'],
             'start_date' => ['required', 'date'],
-            'client_id' => ['required', 'exists:clients,id'],
+            'client_id' => ['required', 'exists:clients,id',
+            function($attribute, $value, $fail) {
+                $client = Client::find($value);
+                if (!$client || $client->created_by !== auth()->id) {
+                    $fail('invalid client id');
+                }
+            }
+            ],
         ];
     }
 }

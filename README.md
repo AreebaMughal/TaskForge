@@ -66,3 +66,14 @@ Each resource has a dedicated controller, two Form Requests (store and update), 
 - When a project is archived, ArchiveProjectAction fires a ProjectArchived event. ProjectArchivedListener picks it up and writes a row to the audit_logs table. For overdue  tasks, a scheduled command runs daily, dispatches a NotifyOverdueTask job per overdue task, and the job sends a TaskOverdueNotification email to the project manager through the database queue driver.
 # ER-E — Tests
 - 10 custom feature tests covering authorization denial, business rule enforcement, validation errors, successful CRUD operations, and queued job dispatch.
+# 10. Self-Review Checklist
+- [x] All database columns match the naming requirements (contact_email, user_id, logged_at).
+- [x] Managers can only see and manage their own clients and projects.
+- [x] Members can only see tasks and timelogs for their assigned projects.
+- [x] Archive read-only is enforced on the server-side for all write operations.
+- [x] Task due dates are validated against project dates on both create and update.
+- [x] All business logic is extracted into Action classes.
+- [x] Controllers are thin and only handle request validation and action calls.
+- [x] The ProjectArchived event listener is explicitly registered.
+- [x] Audit logs are created when a project is archived.
+- [x] Feature tests cover all critical business rules and authorization edge cases.

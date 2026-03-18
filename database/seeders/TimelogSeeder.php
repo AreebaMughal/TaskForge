@@ -40,7 +40,8 @@ class TimelogSeeder extends Seeder
                     'minutes'    => rand(30, 480),
                     'note'       => $notes[($timelogCount + $i) % count($notes)],
                     'task_id'    => $task->id,
-                    'created_by' => $member->id,
+                    'user_id' => $member->id,
+                    'logged_at' => fake()->dateTimeBetween('-1 year', 'now'),
                 ]);
                 $timelogCount++;
                 if ($timelogCount >= 100) {

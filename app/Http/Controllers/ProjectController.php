@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Actions\ArchiveProjectAction;
 use App\Actions\AssignMembersAction;
+use App\Actions\CreateProjectAction;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Client;
 use App\Models\Project;
+use App\Models\User;
 use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -37,19 +39,16 @@ class ProjectController extends Controller
     public function create()
     {
         $this->authorize('create', Project::class);
-        $clients=Client::all();
+        $clients=Client::where('created_by', auth()->id())->get();
         return view('projects.create', compact('clients'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProjectRequest $request)
+    public function store(StoreProjectRequest $request, CreateProjectAction $action)
     {
-        Project::create([
-            ...$request->validated(),
-            'created_by'=> auth()->id()
-        ]);
+        $action->execute($request->validated(), auth()->id());
         return redirect()->route('projects.index')->with('success', 'project created successfully');
     }
 
@@ -69,18 +68,17 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $this->authorize('update', $project);
-        $clients = Client::all();
-        $users = \App\Models\User::where('role', \App\Models\User::ROLE_MEMBER)->get();
+        $clients = Client::where('created_by', auth()->id())->get();
+        $users = User::where('role', User::ROLE_MEMBER)->get();
         return view('projects.edit', compact('project', 'clients', 'users'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProjectRequest $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project, \App\Actions\UpdateProjectAction $action)
     {
-        $project->update($request->validated());
-        $project->members()->sync($request->members ?? []);
+        $action->execute($project, $request->validated());
         return redirect()->route('projects.index')->with('success', 'project successfully updated');
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Exceptions\CannotAddTaskToArchiveProject;
 use App\Exceptions\InvalidTaskDateException;
 use App\Exceptions\UserNotProjectMemberException;
 use App\Models\Project;
@@ -16,6 +17,10 @@ class CreateTaskAction
     {
         $project = Project::findorfail($task['project_id']);
         
+        if($project->archived_at) {
+            throw new CannotAddTaskToArchiveProject();
+        }
+
         if($task['due_date'] < $project->start_date->format('Y-m-d')) {
             throw new InvalidTaskDateException();
         }

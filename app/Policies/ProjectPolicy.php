@@ -21,11 +21,9 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        if ($user->isAdmin() || $user->isManager()) {
-            return true;
-        }
-
-        return $user->isMember() && $project->members->contains($user->id);
+        return ($user->isMember() && $project->members->contains($user->id)) 
+            || ($user->isManager() && $project->client->created_by === $user->id)
+            || $user->isAdmin();
     }
 
     /**
@@ -33,7 +31,7 @@ class ProjectPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isManager()|| $user->isAdmin();
+        return $user->isManager() || $user->isAdmin();
     }
 
     /**
@@ -45,7 +43,7 @@ class ProjectPolicy
             return false;
         }
 
-        return $user->isManager() && $project->created_by === $user->id || $user->isAdmin();
+        return $user->isAdmin() || ($user->isManager() && $project->client->created_by === $user->id);
     }
 
     /**
@@ -57,7 +55,7 @@ class ProjectPolicy
             return false;
         }
 
-        return $user->isManager() && $project->created_by === $user->id || $user->isAdmin();
+        return $user->isAdmin() || ($user->isManager() && $project->client->created_by === $user->id);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\LogTimeAction;
+use App\Actions\UpdateTimelogAction;
 use App\Http\Requests\StoreTimelogRequest;
 use App\Http\Requests\UpdateTimelogRequest;
 use App\Models\Timelog;
@@ -64,10 +65,13 @@ class TimelogController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTimelogRequest $request, Timelog $timelog)
+    public function update(UpdateTimelogRequest $request, Timelog $timelog, UpdateTimelogAction $action)
     {
-        $this->authorize('update', $timelog);
-        $timelog->update($request->validated());
+        try {
+            $action->execute($timelog, $request->validated());
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
         return redirect()->route('tasks.show', $timelog->task_id)->with('success', 'successfully updated');
     }
 

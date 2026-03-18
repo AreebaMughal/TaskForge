@@ -16,10 +16,11 @@ return new class extends Migration
             $table->unsignedInteger('minutes');
             $table->text('note');
             $table->foreignId('task_id')->constrained('tasks')->onDelete('cascade');
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->timestamp('logged_at')->nullable();
             $table->timestampsTz();
             $table->softDeletesTz();
-            $table->index('created_by');
+            $table->index('user_id');
         });
     }
 

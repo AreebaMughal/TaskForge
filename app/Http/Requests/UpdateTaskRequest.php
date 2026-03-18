@@ -26,8 +26,16 @@ class UpdateTaskRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'status' => ['required', 'in:completed,in_progress'],
-            'due_date' => ['required', 'date'],
-
+            'due_date' => ['required', 'date', function ($attribute, $value, $fail) {
+                $task = $this->route('task');
+                $project = $task->project;
+                if ($value < $project->start_date->format('Y-m-d')) {
+                    $fail('The due date must be after the project start date (' . $project->start_date->format('Y-m-d') . ').');
+                }
+                if ($project->due_date && $value > $project->due_date->format('Y-m-d')) {
+                    $fail('The due date must be before the project end date (' . $project->due_date->format('Y-m-d') . ').');
+                }
+            }],
         ];
     }
 }

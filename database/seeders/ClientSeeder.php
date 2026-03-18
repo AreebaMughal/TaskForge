@@ -17,11 +17,11 @@ class ClientSeeder extends Seeder
         $manager = User::where('email', 'manager@gmail.com')->first();
         $manager1 = User::where('email', 'manager1@gmail.com')->first();
         $clients = [
-            ['name' => 'Tom Cruise', 'email' => 'cruise@gmail.com', 'created_by' => $manager->id],
-            ['name' => 'Jack Sparrow', 'email' => 'sparrow@gmail.com', 'created_by' => $manager->id],
-            ['name' => 'Black Widow', 'email' => 'widow@gmail.com', 'created_by'=> $manager1->id],
-            ['name' => 'Tony Stark', 'email' => 'stark@gmail.com', 'created_by'=> $manager1->id],
-            ['name' => 'Will Byers', 'email' => 'byers@gmail.com', 'created_by'=> $manager1->id],
+            ['name' => 'Tom Cruise', 'contact_email' => 'cruise@gmail.com', 'created_by' => $manager->id],
+            ['name' => 'Jack Sparrow', 'contact_email' => 'sparrow@gmail.com', 'created_by' => $manager->id],
+            ['name' => 'Black Widow', 'contact_email' => 'widow@gmail.com', 'created_by'=> $manager1->id],
+            ['name' => 'Tony Stark', 'contact_email' => 'stark@gmail.com', 'created_by'=> $manager1->id],
+            ['name' => 'Will Byers', 'contact_email' => 'byers@gmail.com', 'created_by'=> $manager1->id],
             ];
             foreach ($clients as $client) {
                 Client::create($client);
