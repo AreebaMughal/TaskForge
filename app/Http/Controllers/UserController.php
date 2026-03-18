@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\CreateUserAction;
+use App\Actions\UpdateUserAction;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
@@ -34,14 +36,9 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request, CreateUserAction $action)
     {
-        User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => $request->role,
-        ]);
+        $action->execute($request->validated());
         return redirect()->route('users.index')->with('success', 'User created successfully');
     }
 
@@ -57,9 +54,9 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, User $user, UpdateUserAction $action)
     {
-        $user->update($request->validated());
+        $action->execute($user, $request->validated());
         return redirect()->route('users.index')->with('success', 'User updated successfully');
     }
 

@@ -30,7 +30,7 @@ class TaskForgeTest extends TestCase
         $manager = User::factory()->manager()->create();
         $response = $this->actingAs($manager)->post(route('clients.store'), [
             'name'  => 'Testing Client',
-            'email' => 'test@gmail.com',
+            'contact_email' => 'test@gmail.com',
         ]);
         $response->assertRedirect(route('clients.index'));
         $this->assertDatabaseHas('clients', ['name' => 'Testing Client']);
@@ -41,14 +41,15 @@ class TaskForgeTest extends TestCase
     {
         $manager = User::factory()->manager()->create();
         $response = $this->actingAs($manager)->post(route('clients.store'), []);
-        $response->assertSessionHasErrors(['name', 'email']);
+        $response->assertSessionHasErrors(['name', 'contact_email']);
+        $response->assertSessionHasErrors(['name', 'contact_email']);
     }
 
     // T4 — Cannot delete client with active projects
     public function test_cannot_delete_client_with_active_projects(): void
     {
         $manager = User::factory()->manager()->create();
-        $client = Client::factory()->create(['created_by' => $manager->id]);
+        $client = Client::factory()->create(['created_by' => $manager->id, 'contact_email' => 'client@example.com']);
         Project::factory()->create([
             'client_id'  => $client->id,
             'created_by' => $manager->id,
@@ -137,13 +138,13 @@ class TaskForgeTest extends TestCase
         ]);
         $timelog = Timelog::factory()->create([
             'task_id'    => $task->id,
-            'created_by' => $member1->id,
+            'user_id' => $member1->id,
         ]);
         $response = $this->actingAs($member2)->get(route('timelogs.edit', $timelog));
         $response->assertStatus(403);
     }
 
-    // TEST 9 — Overdue task dispatches queued job
+    // T9 — Overdue task dispatches queued job
     public function test_overdue_task_check_dispatches_job(): void
     {
         Queue::fake();
@@ -164,12 +165,88 @@ class TaskForgeTest extends TestCase
         Queue::assertPushed(NotifyOverdueTask::class);
     }
 
-    // TEST 10 — Admin can create users, member cannot
+    // T10 — Admin can create users, member cannot
     public function test_only_admin_can_access_user_management(): void
     {
         $admin  = User::factory()->admin()->create();
         $member = User::factory()->member()->create();
         $this->actingAs($admin)->get(route('users.index'))->assertStatus(200);
         $this->actingAs($member)->get(route('users.index'))->assertStatus(403);
+    }
+    // T11 — manager cannot manage another manager's client
+    public function test_manager_cannot_update_another_managers_client(): void
+    {
+        $manager1 = User::factory()->manager()->create();
+        $manager2 = User::factory()->manager()->create();
+        $client   = Client::factory()->create(['created_by' => $manager1->id]);
+        $response = $this->actingAs($manager2)->put(route('clients.update', $client), [
+            'name'          => 'Zendaya',
+            'contact_email' => 'Zendaya@email.com',
+        ]);
+        $response->assertStatus(403);
+    }
+
+    // T12 — cannot create task on archived project
+    public function test_cannot_create_task_on_archived_project(): void
+    {
+        $member  = User::factory()->member()->create();
+        $manager = User::factory()->manager()->create();
+        $client  = Client::factory()->create(['created_by' => $manager->id]);
+        $project = Project::factory()->create([
+            'client_id'   => $client->id,
+            'created_by'  => $manager->id,
+            'archived_at' => now(),
+        ]);
+        $project->members()->attach($member->id);
+        $response = $this->actingAs($member)->post(route('tasks.store'), [
+            'title'       => 'New Task',
+            'description' => 'Test',
+            'status'      => 'in_progress',
+            'due_date'    => now()->addDays(5)->format('Y-m-d'),
+            'project_id'  => $project->id,
+        ]);
+        $response->assertSessionHas('error');
+    }
+
+    // T13 — audit log is written when project is archived
+    public function test_audit_log_created_on_project_archive(): void
+    {
+        $manager = User::factory()->manager()->create();
+        $client  = Client::factory()->create(['created_by' => $manager->id]);
+        $project = Project::factory()->create([
+            'client_id'  => $client->id,
+            'created_by' => $manager->id,
+        ]);
+        $this->actingAs($manager)->post(route('projects.archive', $project));
+        $this->assertDatabaseHas('audit_logs', [
+            'project_id' => $project->id,
+            'user_id'    => $manager->id,
+            'action'     => 'archived',
+        ]);
+    }
+
+    // T14 — task due date cannot be before project start date on update
+    public function test_task_due_date_cannot_be_before_project_start_on_update(): void
+    {
+        $member  = User::factory()->member()->create();
+        $manager = User::factory()->manager()->create();
+        $client  = Client::factory()->create(['created_by' => $manager->id]);
+        $project = Project::factory()->create([
+            'client_id'  => $client->id,
+            'created_by' => $manager->id,
+            'start_date' => '2026-06-01',
+        ]);
+        $task = Task::factory()->create([
+            'project_id' => $project->id,
+            'created_by' => $member->id,
+            'due_date'   => '2026-06-15',
+        ]);
+        $response = $this->actingAs($member)->put(route('tasks.update', $task), [
+            'title'       => $task->title,
+            'description' => $task->description,
+            'status'      => 'in_progress',
+            'due_date'    => '2026-05-01',
+        ]);
+        $response->assertSessionHasErrors(['due_date']);
     }
 }

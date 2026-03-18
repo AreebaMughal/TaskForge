@@ -22,7 +22,8 @@ class TimelogFactory extends Factory
             'minutes'    => fake()->numberBetween(30, 480),
             'note'       => fake()->sentence(),
             'task_id'    => Task::factory(),
-            'created_by' => User::factory()->member(),
+            'user_id' => User::factory()->member(),
+            'logged_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];
     }
 }

@@ -19,7 +19,12 @@ class ClientController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Client::class);
-        $clients = Client::withCount('projects')->latest()->paginate(10);
+        $clients = Client::withCount('projects')
+            ->when(auth()->user()->isManager(), function ($query) {
+                return $query->where('created_by', auth()->id());
+            })
+            ->latest()
+            ->paginate(10);
         return view('clients.index', compact('clients'));
     }
 
@@ -35,12 +40,9 @@ class ClientController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreClientRequest $request)
+    public function store(StoreClientRequest $request, \App\Actions\CreateClientAction $action)
     {
-        Client::create([
-            ...$request->validated(),
-            'created_by'=> auth()->id(),
-            ]);
+        $action->execute($request->validated(), auth()->id());
         return redirect()->route('clients.index')->with('success', 'client created successfully');
     }
 
@@ -66,11 +68,9 @@ class ClientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateClientRequest $request, Client $client)
+    public function update(UpdateClientRequest $request, Client $client, \App\Actions\UpdateClientAction $action)
     {
-        $client->update([
-            ...$request->validated(),
-            'created_by' => auth()->id(),]);
+        $action->execute($client, $request->validated());
         return redirect()->route('clients.index')->with('success', 'client updated successfully');
     }
 

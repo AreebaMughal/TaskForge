@@ -21,11 +21,11 @@ class ProjectSeeder extends Seeder
         $member1 = User::where('email', 'member1@gmail.com')->first();
         $member2 = User::where('email', 'member2@gmail.com')->first();
 
-        $cruise = Client::where('email', 'cruise@gmail.com')->first();
-        $sparrow = Client::where('email', 'sparrow@gmail.com')->first();
-        $stark = Client::where('email', 'stark@gmail.com')->first();
-        $widow = Client::where('email', 'widow@gmail.com')->first();
-        $byers = Client::where('email', 'byers@gmail.com')->first();
+        $cruise = Client::where('contact_email', 'cruise@gmail.com')->first();
+        $sparrow = Client::where('contact_email', 'sparrow@gmail.com')->first();
+        $stark = Client::where('contact_email', 'stark@gmail.com')->first();
+        $widow = Client::where('contact_email', 'widow@gmail.com')->first();
+        $byers = Client::where('contact_email', 'byers@gmail.com')->first();
 
         $projects = [
             [

@@ -21,7 +21,17 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        return $user->isMember() || $user->isAdmin() || $user->isManager();
+        if ($user->isAdmin()) return true;
+        
+        if ($user->isManager()) {
+            return $task->project->client->created_by === $user->id;
+        }
+
+        if ($user->isMember()) {
+            return $task->project->members()->where('user_id', $user->id)->exists();
+        }
+
+        return false;
     }
 
     /**

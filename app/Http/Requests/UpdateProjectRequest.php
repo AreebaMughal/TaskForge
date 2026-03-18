@@ -26,7 +26,16 @@ class UpdateProjectRequest extends FormRequest
             'status' => ['required', 'in:active,inactive'],
             'start_date' => ['required', 'date'],
             'due_date' => ['required', 'date', 'after:start_date'],
-            'client_id' => ['required', 'exists:clients,id'],
+            'client_id' => [
+                'required',
+                'exists:clients,id',
+                function ($attribute, $value, $fail) {
+                    $client = Client::find($value);
+                    if (!$client || $client->created_by !== auth()->id) {
+                        $fail('invalid client id');
+                    }
+                }
+            ],
             'members' => ['nullable', 'array'],
             'members.*' => ['exists:users,id'],
         ];

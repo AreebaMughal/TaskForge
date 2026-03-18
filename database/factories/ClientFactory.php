@@ -19,7 +19,7 @@ class ClientFactory extends Factory
     {
         return [
             'name'       => fake()->company(),
-            'email'      => fake()->unique()->companyEmail(),
+            'contact_email' => fake()->unique()->companyEmail(),
             'created_by' => User::factory()->manager(),
         ];
     }

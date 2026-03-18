@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\CreateTaskAction;
+use App\Actions\UpdateTaskAction;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
@@ -71,10 +72,14 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTaskRequest $request, Task $task)
+    public function update(UpdateTaskRequest $request, Task $task, UpdateTaskAction $action)
     {
-        $task->update($request->validated());
-        return redirect()->route('tasks.show', $task)->with('success', 'project successfully updated');
+        try {
+            $action->execute($task, $request->validated());
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+        return redirect()->route('tasks.show', $task)->with('success', 'task successfully updated');
     }
 
     /**

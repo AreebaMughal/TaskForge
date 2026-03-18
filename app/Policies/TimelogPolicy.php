@@ -21,7 +21,17 @@ class TimelogPolicy
      */
     public function view(User $user, Timelog $timelog): bool
     {
-        return $user->isAdmin() || $user->isManager() || $user->isMember();
+        if ($user->isAdmin()) return true;
+
+        if ($user->isManager()) {
+            return $timelog->task->project->client->created_by === $user->id;
+        }
+
+        if ($user->isMember()) {
+            return $timelog->task->project->members()->where('user_id', $user->id)->exists();
+        }
+
+        return false;
     }
 
     /**
